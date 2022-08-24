@@ -2,78 +2,100 @@ import React, { useState, setState } from "react";
 // import "./style.css";
 import { database } from "../firebase";
 import { ref, push, child, update } from "firebase/database";
-function BillDetail() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleInputChange = e => {
-    const { id, value } = e.target;
-    if (id === "firstName") {
-      setFirstName(value);
-    }
-    if (id === "lastName") {
-      setLastName(value);
-    }
-    if (id === "email") {
-      setEmail(value);
-    }
-    if (id === "password") {
-      setPassword(value);
-    }
-    if (id === "confirmPassword") {
-      setConfirmPassword(value);
-    }
-  };
+function BillDetails(){
 
-  const handleSubmit = () => {
-    let obj = {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      password: password,
-      confirmPassword: confirmPassword
-    };
-    const newPostKey = push(child(ref(database), "posts")).key;
-    const updates = {};
-    updates["/" + newPostKey] = obj;
-    return update(ref(database), updates);
-  };
+     const [userName, setuserName] = useState(null);
+     const [phoneNo, setphoneNo] = useState(null);
+     const [email, setEmail] = useState(null);
+     const [itemName, setitemName] = useState("");
+     const [itemArr, setItemArr] = useState([]);
+     const [itemPrice, setitemPrice] = useState([]);
+     const [itemQuantity, setitemQuantity] = useState([]);
+     let [totalPrice, settotalPrice] = useState(0);
 
-  return (
+    const handleInputChange = e => {
+        const { id, value } = e.target;
+        if (id === "userName") {
+          setuserName(value);
+        }
+        if (id === "phoneNo") {
+          setphoneNo(value);
+        }
+        if (id === "email") {
+          setEmail(value);
+        }
+      };
+
+    const handleSubmit = () => {
+
+        let curr=0;
+        itemArr.map(item=>{
+          curr+=item.Price*item.Quantity;
+        });
+
+        totalPrice=curr;
+        let obj = {
+          userName: userName,
+          phoneNo: phoneNo,
+          email: email,
+          item : itemArr,
+          totalPrice: totalPrice
+        };
+        const newPostKey = push(child(ref(database), "posts")).key;
+        const updates = {};
+        updates["/" + newPostKey] = obj;
+        return update(ref(database), updates);
+      };
+
+      const handleSubmit1 = () => {
+        console.log(itemName);
+        let obj = {
+            ItemName : itemName,
+            Price    : itemPrice,
+            Quantity : itemQuantity,
+        }
+        setItemArr([...itemArr, obj]);
+        setitemName("");
+        setitemPrice("");
+        setitemQuantity("");
+        // setTimeout(() => {console.log(itemArr);}, 2000);
+      }
+      console.log(itemArr);
+
+
+    return(
     <div className="form">
       <div className="form-body">
         <div className="username">
-          <label className="form__label" htmlFor="firstName">
-            First Name{" "}
+          <label className="form__label" for="userName">
+            User Name{" "}
           </label>
           <input
             className="form__input"
             type="text"
-            value={firstName}
+            value={userName}
             onChange={e => handleInputChange(e)}
-            id="firstName"
-            placeholder="First Name"
+            id="userName"
+            placeholder="User Name"
           />
         </div>
-        <div className="lastname">
-          <label className="form__label" htmlFor="lastName">
-            Last Name{" "}
+        <div className="phoneNo">
+          <label className="form__label" for="phoneNo">
+            Phone No.{" "}
           </label>
           <input
             type="text"
             name=""
-            id="lastName"
-            value={lastName}
+            id="phoneNo"
+            value={phoneNo}
             className="form__input"
             onChange={e => handleInputChange(e)}
-            placeholder="LastName"
+            placeholder="phoneNo"
           />
         </div>
         <div className="email">
-          <label className="form__label" htmlFor="email">
+          <label className="form__label" for="email">
             Email{" "}
           </label>
           <input
@@ -85,40 +107,56 @@ function BillDetail() {
             placeholder="Email"
           />
         </div>
-        <div className="password">
-          <label className="form__label" htmlFor="password">
-            Password{" "}
+        <div className="itemName">
+          <label className="form__label" for="itemName">
+            Item Name{" "}
           </label>
           <input
+            type="text"
+            id="itemName"
             className="form__input"
-            type="password"
-            id="password"
-            value={password}
-            onChange={e => handleInputChange(e)}
-            placeholder="Password"
+            value={itemName}
+            onChange={e => setitemName(e.target.value)}
+            placeholder="Item Name"
           />
-        </div>
-        <div className="confirm-password">
-          <label className="form__label" htmlFor="confirmPassword">
-            Confirm Password{" "}
-          </label>
           <input
+            type="text"
+            id="itemPrice"
             className="form__input"
-            type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={e => handleInputChange(e)}
-            placeholder="Confirm Password"
+            value={itemPrice}
+            onChange={e => setitemPrice(e.target.value)}
+            placeholder="Item Price"
           />
+          <input
+            type="text"
+            id="itemQuantity"
+            className="form__input"
+            value={itemQuantity}
+            onChange={e => setitemQuantity(e.target.value)}
+            placeholder="Item Quantity"
+          />
+          <button onClick={() => handleSubmit1()} type="submit" class="btn">
+          Add
+        </button>
         </div>
+        {
+           itemArr.map(item=>{
+            console.log(item.Price);
+            return(
+              <div>{item.ItemName} : {item.Price} : {item.Quantity}</div>
+            )
+           })
+        }
+        
       </div>
       <div className="footer">
-        <button onClick={() => handleSubmit()} type="submit" className="btn">
-          Register
+        <button onClick={() => handleSubmit()} type="submit" class="btn">
+          Submit
         </button>
       </div>
     </div>
-  );
+    );
 }
 
-export default BillDetail;
+
+export default BillDetails
