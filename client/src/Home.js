@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { auth, database as db } from "./firebase";
 import { signOut } from "firebase/auth";
 import { AuthContext } from "./AuthProvider";
-// import "./Home.css";
+import "./Home.css";
 import BillDetail from "./Components/BillDetail";
 import { useNavigate } from "react-router-dom";
 import { ref, onValue } from "firebase/database";
@@ -37,14 +37,19 @@ function Home() {
 
   return (
     <div className="mainContainer">
-      <h1>Home</h1>
-      {currentUser && <p>Welcome, {username}</p>}
+      <div className="upper-section">
+        <div className="upper-left">
+          {currentUser ? <p>Welcome, {username}</p> : <div>s</div>}
+        </div>
+        <div className="upper-right">
+          <button onClick={clickLogin}>
+            {currentUser ? "Log Out" : "Login"}
+          </button>
+          {!currentUser && <button onClick={clickSignup}>Sign Up</button>}
+        </div>
+      </div>
       <div className="buttons">
-        <button onClick={clickLogin}>
-          {currentUser ? "Log Out" : "Login"}
-        </button>
         {currentUser ? <BillDetail></BillDetail> : <div>Hello</div>}
-        {!currentUser && <button onClick={clickSignup}>Sign Up</button>}
       </div>
     </div>
   );

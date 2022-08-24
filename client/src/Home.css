@@ -1,0 +1,37 @@
+.upper-section{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  flex-wrap: nowrap;
+  background-color: aquamarine;
+}
+.upper-left{
+background-color: aqua;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: nowrap;
+}
+.upper-right{
+  display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: bisque;
+    flex-wrap: nowrap;
+
+}
+.maincontainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.buttons{
+  background-color: antiquewhite;
+  display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+}
