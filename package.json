@@ -13,5 +13,7 @@
     "concurrently": "^7.3.0",
     "nodemon": "^2.0.19"
   },
-  "dependencies": {}
+  "dependencies": {
+    "react-hook-form": "^7.34.2"
+  }
 }

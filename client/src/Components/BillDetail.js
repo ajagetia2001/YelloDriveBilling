@@ -2,6 +2,7 @@ import React, { useState, setState } from "react";
 // import "./style.css";
 import { database } from "../firebase";
 import { ref, push, child, update } from "firebase/database";
+import { useForm } from "react-hook-form";
 
 function BillDetails() {
   const [userName, setuserName] = useState("");
@@ -12,7 +13,23 @@ function BillDetails() {
   const [itemPrice, setitemPrice] = useState([]);
   const [itemQuantity, setitemQuantity] = useState([]);
   let [totalPrice, settotalPrice] = useState(0);
-
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm();
+  const registerOptions = {
+    name: { required: "Name is required" },
+    phoneNo: { required: "phone number is required" },
+    email: { required: "Email is required" },
+    password: {
+      required: "Password is required",
+      minLength: {
+        value: 8,
+        message: "Password must have at least 8 characters"
+      }
+    }
+  };
   const handleInputChange = e => {
     const { id, value } = e.target;
     if (id === "userName") {
@@ -26,7 +43,7 @@ function BillDetails() {
     }
   };
 
-  const handleSubmit = () => {
+  const onSubmit = () => {
     let curr = 0;
     itemArr.map(item => {
       curr += item.Price * item.Quantity;
@@ -43,6 +60,14 @@ function BillDetails() {
     const newPostKey = push(child(ref(database), "posts")).key;
     const updates = {};
     updates["/" + newPostKey] = obj;
+    setuserName("");
+    setphoneNo("");
+    setEmail("");
+    setitemName("");
+    setItemArr([]);
+    setitemPrice([]);
+    setitemQuantity([]);
+    settotalPrice(0);
     return update(ref(database), updates);
   };
 
@@ -62,7 +87,7 @@ function BillDetails() {
   console.log(itemArr);
 
   return (
-    <div className="form">
+    <form onSubmit={handleSubmit(onSubmit)} className="form">
       <div className="form-body">
         <div className="username">
           <label className="form__label" htmlFor="userName">
@@ -70,13 +95,18 @@ function BillDetails() {
           </label>
           <input
             className="form__input"
+            {...register("name", registerOptions.name)}
             type="text"
             value={userName}
             onChange={e => handleInputChange(e)}
             id="userName"
             placeholder="User Name"
           />
+          <small className="text-danger">
+            {errors?.name && errors.name.message}
+          </small>
         </div>
+
         <div className="phoneNo">
           <label className="form__label" htmlFor="phoneNo">
             Phone No.{" "}
@@ -85,11 +115,15 @@ function BillDetails() {
             type="text"
             name=""
             id="phoneNo"
+            {...register("phoneNo", registerOptions.phoneNo)}
             value={phoneNo}
             className="form__input"
             onChange={e => handleInputChange(e)}
             placeholder="phoneNo"
           />
+          <small className="text-danger">
+            {errors?.phoneNo && errors.phoneNo.message}
+          </small>
         </div>
         <div className="email">
           <label className="form__label" htmlFor="email">
@@ -99,11 +133,16 @@ function BillDetails() {
             type="email"
             id="email"
             className="form__input"
+            {...register("email", registerOptions.email)}
             value={email}
             onChange={e => handleInputChange(e)}
             placeholder="Email"
           />
+          <small className="text-danger">
+            {errors?.email && errors.email.message}
+          </small>
         </div>
+
         <div className="itemName">
           <label className="form__label" htmlFor="itemName">
             Item Name{" "}
@@ -146,11 +185,11 @@ function BillDetails() {
         })}
       </div>
       <div className="footer">
-        <button onClick={() => handleSubmit()} type="submit" className="btn">
+        <button type="submit" className="btn">
           Submit
         </button>
       </div>
-    </div>
+    </form>
   );
 }
 
