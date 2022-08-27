@@ -3,72 +3,69 @@ import React, { useState, setState } from "react";
 import { database } from "../firebase";
 import { ref, push, child, update } from "firebase/database";
 
-function BillDetails(){
+function BillDetails() {
+  const [userName, setuserName] = useState("");
+  const [phoneNo, setphoneNo] = useState("");
+  const [email, setEmail] = useState("");
+  const [itemName, setitemName] = useState("");
+  const [itemArr, setItemArr] = useState([]);
+  const [itemPrice, setitemPrice] = useState([]);
+  const [itemQuantity, setitemQuantity] = useState([]);
+  let [totalPrice, settotalPrice] = useState(0);
 
-     const [userName, setuserName] = useState(null);
-     const [phoneNo, setphoneNo] = useState(null);
-     const [email, setEmail] = useState(null);
-     const [itemName, setitemName] = useState("");
-     const [itemArr, setItemArr] = useState([]);
-     const [itemPrice, setitemPrice] = useState([]);
-     const [itemQuantity, setitemQuantity] = useState([]);
-     let [totalPrice, settotalPrice] = useState(0);
+  const handleInputChange = e => {
+    const { id, value } = e.target;
+    if (id === "userName") {
+      setuserName(value);
+    }
+    if (id === "phoneNo") {
+      setphoneNo(value);
+    }
+    if (id === "email") {
+      setEmail(value);
+    }
+  };
 
-    const handleInputChange = e => {
-        const { id, value } = e.target;
-        if (id === "userName") {
-          setuserName(value);
-        }
-        if (id === "phoneNo") {
-          setphoneNo(value);
-        }
-        if (id === "email") {
-          setEmail(value);
-        }
-      };
+  const handleSubmit = () => {
+    let curr = 0;
+    itemArr.map(item => {
+      curr += item.Price * item.Quantity;
+    });
 
-    const handleSubmit = () => {
+    totalPrice = curr;
+    let obj = {
+      userName: userName,
+      phoneNo: phoneNo,
+      email: email,
+      item: itemArr,
+      totalPrice: totalPrice
+    };
+    const newPostKey = push(child(ref(database), "posts")).key;
+    const updates = {};
+    updates["/" + newPostKey] = obj;
+    return update(ref(database), updates);
+  };
 
-        let curr=0;
-        itemArr.map(item=>{
-          curr+=item.Price*item.Quantity;
-        });
+  const handleSubmit1 = () => {
+    console.log(itemName);
+    let obj = {
+      ItemName: itemName,
+      Price: itemPrice,
+      Quantity: itemQuantity
+    };
+    setItemArr([...itemArr, obj]);
+    setitemName("");
+    setitemPrice("");
+    setitemQuantity("");
+    // setTimeout(() => {console.log(itemArr);}, 2000);
+  };
+  console.log(itemArr);
 
-        totalPrice=curr;
-        let obj = {
-          userName: userName,
-          phoneNo: phoneNo,
-          email: email,
-          item : itemArr,
-          totalPrice: totalPrice
-        };
-        const newPostKey = push(child(ref(database), "posts")).key;
-        const updates = {};
-        updates["/" + newPostKey] = obj;
-        return update(ref(database), updates);
-      };
-
-      const handleSubmit1 = () => {
-        console.log(itemName);
-        let obj = {
-            ItemName : itemName,
-            Price    : itemPrice,
-            Quantity : itemQuantity,
-        }
-        setItemArr([...itemArr, obj]);
-        setitemName("");
-        setitemPrice("");
-        setitemQuantity("");
-        // setTimeout(() => {console.log(itemArr);}, 2000);
-      }
-      console.log(itemArr);
-
-
-    return(
+  return (
     <div className="form">
       <div className="form-body">
         <div className="username">
-          <label className="form__label" for="userName">
+          <label className="form__label" htmlFor="userName">
             User Name{" "}
           </label>
           <input
@@ -81,7 +78,7 @@ function BillDetails(){
           />
         </div>
         <div className="phoneNo">
-          <label className="form__label" for="phoneNo">
+          <label className="form__label" htmlFor="phoneNo">
             Phone No.{" "}
           </label>
           <input
@@ -95,7 +92,7 @@ function BillDetails(){
           />
         </div>
         <div className="email">
-          <label className="form__label" for="email">
+          <label className="form__label" htmlFor="email">
             Email{" "}
           </label>
           <input
@@ -108,7 +105,7 @@ function BillDetails(){
           />
         </div>
         <div className="itemName">
-          <label className="form__label" for="itemName">
+          <label className="form__label" htmlFor="itemName">
             Item Name{" "}
           </label>
           <input
@@ -135,28 +132,26 @@ function BillDetails(){
             onChange={e => setitemQuantity(e.target.value)}
             placeholder="Item Quantity"
           />
-          <button onClick={() => handleSubmit1()} type="submit" class="btn">
-          Add
-        </button>
+          <button onClick={() => handleSubmit1()} type="submit" className="btn">
+            Add
+          </button>
         </div>
-        {
-           itemArr.map(item=>{
-            console.log(item.Price);
-            return(
-              <div>{item.ItemName} : {item.Price} : {item.Quantity}</div>
-            )
-           })
-        }
-        
+        {itemArr.map(item => {
+          console.log(item.Price);
+          return (
+            <div>
+              {item.ItemName} : {item.Price} : {item.Quantity}
+            </div>
+          );
+        })}
       </div>
       <div className="footer">
-        <button onClick={() => handleSubmit()} type="submit" class="btn">
+        <button onClick={() => handleSubmit()} type="submit" className="btn">
           Submit
         </button>
       </div>
     </div>
-    );
+  );
 }
 
-
-export default BillDetails
+export default BillDetails;
