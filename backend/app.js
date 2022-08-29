@@ -4,10 +4,13 @@ var bodyParser = require("body-parser");
 const express = require("express");
 const cors = require("cors");
 const { Client, MessageMedia, LocalAuth } = require("whatsapp-web.js");
+const { generateImage } = require("./controllers/handle");
+
 const app = express();
 app.use(cors());
 
 app.use(express.urlencoded({ extended: true }));
+app.use("/", require("./routes/web"));
 var jsonParser = bodyParser.json();
 const sendWithApi = (req, res) => {
   const { message, to } = req.body;
@@ -20,9 +23,13 @@ app.post("/send", jsonParser, sendWithApi);
 const client = new Client({
   authStrategy: new LocalAuth()
 });
-client.on("qr", qr => {
-  qrcode.generate(qr, { small: true });
-});
+client.on("qr", qr =>
+  generateImage(qr, () => {
+    qrcode.generate(qr, { small: true });
+
+    console.log("View QR http://localhost:5000/qr");
+  })
+);
 client.on("authenticated", session => {
   console.log("auth");
 });
