@@ -42,14 +42,33 @@ function BillDetails() {
       setEmail(value);
     }
   };
-
+  const PostData = async e => {
+    e.preventDefault();
+    const number = phoneNo;
+    const res = await fetch("/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: `your total bill is ${totalPrice}`,
+        to: number
+      })
+    });
+    const data = await res.json();
+    if (data.status === 200) {
+      window.alert("success");
+      console.log(data);
+    }
+  };
   const onSubmit = () => {
+    // PostData();
     let curr = 0;
     itemArr.map(item => {
       curr += item.Price * item.Quantity;
     });
 
-    totalPrice = curr;
+    settotalPrice(curr);
     let obj = {
       userName: userName,
       phoneNo: phoneNo,
@@ -72,12 +91,16 @@ function BillDetails() {
   };
 
   const handleSubmit1 = () => {
+    // e.preventDefault();
     console.log(itemName);
     let obj = {
       ItemName: itemName,
       Price: itemPrice,
       Quantity: itemQuantity
     };
+
+    settotalPrice(totalPrice + itemPrice * itemQuantity);
+    console.log(totalPrice);
     setItemArr([...itemArr, obj]);
     setitemName("");
     setitemPrice("");
@@ -87,109 +110,118 @@ function BillDetails() {
   console.log(itemArr);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="form">
-      <div className="form-body">
-        <div className="username">
-          <label className="form__label" htmlFor="userName">
-            User Name{" "}
-          </label>
-          <input
-            className="form__input"
-            {...register("name", registerOptions.name)}
-            type="text"
-            value={userName}
-            onChange={e => handleInputChange(e)}
-            id="userName"
-            placeholder="User Name"
-          />
-          <small className="text-danger">
-            {errors?.name && errors.name.message}
-          </small>
-        </div>
+    <div>
+      <form onSubmit={handleSubmit(onSubmit)} className="form">
+        <div className="form-body">
+          <div className="username">
+            <label className="form__label" htmlFor="userName">
+              User Name{" "}
+            </label>
+            <input
+              className="form__input"
+              {...register("name", registerOptions.name)}
+              type="text"
+              value={userName}
+              onChange={e => handleInputChange(e)}
+              id="userName"
+              placeholder="User Name"
+            />
+            <small className="text-danger">
+              {errors?.name && errors.name.message}
+            </small>
+          </div>
 
-        <div className="phoneNo">
-          <label className="form__label" htmlFor="phoneNo">
-            Phone No.{" "}
-          </label>
-          <input
-            type="text"
-            name=""
-            id="phoneNo"
-            {...register("phoneNo", registerOptions.phoneNo)}
-            value={phoneNo}
-            className="form__input"
-            onChange={e => handleInputChange(e)}
-            placeholder="phoneNo"
-          />
-          <small className="text-danger">
-            {errors?.phoneNo && errors.phoneNo.message}
-          </small>
-        </div>
-        <div className="email">
-          <label className="form__label" htmlFor="email">
-            Email{" "}
-          </label>
-          <input
-            type="email"
-            id="email"
-            className="form__input"
-            {...register("email", registerOptions.email)}
-            value={email}
-            onChange={e => handleInputChange(e)}
-            placeholder="Email"
-          />
-          <small className="text-danger">
-            {errors?.email && errors.email.message}
-          </small>
-        </div>
+          <div className="phoneNo">
+            <label className="form__label" htmlFor="phoneNo">
+              Phone No.{" "}
+            </label>
+            <input
+              type="text"
+              name=""
+              id="phoneNo"
+              {...register("phoneNo", registerOptions.phoneNo)}
+              value={phoneNo}
+              className="form__input"
+              onChange={e => handleInputChange(e)}
+              placeholder="phoneNo"
+            />
+            <small className="text-danger">
+              {errors?.phoneNo && errors.phoneNo.message}
+            </small>
+          </div>
+          <div className="email">
+            <label className="form__label" htmlFor="email">
+              Email{" "}
+            </label>
+            <input
+              type="email"
+              id="email"
+              className="form__input"
+              {...register("email", registerOptions.email)}
+              value={email}
+              onChange={e => handleInputChange(e)}
+              placeholder="Email"
+            />
+            <small className="text-danger">
+              {errors?.email && errors.email.message}
+            </small>
+          </div>
 
-        <div className="itemName">
-          <label className="form__label" htmlFor="itemName">
-            Item Name{" "}
-          </label>
-          <input
-            type="text"
-            id="itemName"
-            className="form__input"
-            value={itemName}
-            onChange={e => setitemName(e.target.value)}
-            placeholder="Item Name"
-          />
-          <input
-            type="text"
-            id="itemPrice"
-            className="form__input"
-            value={itemPrice}
-            onChange={e => setitemPrice(e.target.value)}
-            placeholder="Item Price"
-          />
-          <input
-            type="text"
-            id="itemQuantity"
-            className="form__input"
-            value={itemQuantity}
-            onChange={e => setitemQuantity(e.target.value)}
-            placeholder="Item Quantity"
-          />
-          <button onClick={() => handleSubmit1()} type="submit" className="btn">
-            Add
+          <div className="itemName">
+            <label className="form__label" htmlFor="itemName">
+              Item Name{" "}
+            </label>
+            <input
+              type="text"
+              id="itemName"
+              className="form__input"
+              value={itemName}
+              onChange={e => setitemName(e.target.value)}
+              placeholder="Item Name"
+            />
+            <input
+              type="text"
+              id="itemPrice"
+              className="form__input"
+              value={itemPrice}
+              onChange={e => setitemPrice(e.target.value)}
+              placeholder="Item Price"
+            />
+            <input
+              type="text"
+              id="itemQuantity"
+              className="form__input"
+              value={itemQuantity}
+              onChange={e => setitemQuantity(e.target.value)}
+              placeholder="Item Quantity"
+            />
+            <div onClick={() => handleSubmit1()} className="btn">
+              Add
+            </div>
+          </div>
+          {itemArr.map(item => {
+            console.log(item.Price);
+            return (
+              <div>
+                {item.ItemName} : {item.Price} : {item.Quantity}
+              </div>
+            );
+          })}
+        </div>
+        <div className="footer">
+          <button type="submit" className="btn">
+            Submit
           </button>
         </div>
-        {itemArr.map(item => {
-          console.log(item.Price);
-          return (
-            <div>
-              {item.ItemName} : {item.Price} : {item.Quantity}
-            </div>
-          );
-        })}
-      </div>
-      <div className="footer">
-        <button type="submit" className="btn">
-          Submit
-        </button>
-      </div>
-    </form>
+      </form>
+      <form method="POST">
+        <div className="footer">
+          <button type="submit" onClick={PostData} className="btn">
+            send WhastappMEssage
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 

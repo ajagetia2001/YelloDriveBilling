@@ -1,12 +1,14 @@
 const fs = require("fs");
 const qrcode = require("qrcode-terminal");
+var bodyParser = require("body-parser");
 const express = require("express");
 const cors = require("cors");
 const { Client, MessageMedia, LocalAuth } = require("whatsapp-web.js");
 const app = express();
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
 
+app.use(express.urlencoded({ extended: true }));
+var jsonParser = bodyParser.json();
 const sendWithApi = (req, res) => {
   const { message, to } = req.body;
   const newNumber = `91${to}@c.us`;
@@ -14,7 +16,7 @@ const sendWithApi = (req, res) => {
   sendMessage(newNumber, message);
   res.send({ status: "success" });
 };
-app.post("/send", sendWithApi);
+app.post("/send", jsonParser, sendWithApi);
 const client = new Client({
   authStrategy: new LocalAuth()
 });
