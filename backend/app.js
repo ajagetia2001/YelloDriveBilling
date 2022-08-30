@@ -8,7 +8,7 @@ const { generateImage } = require("./controllers/handle");
 
 const app = express();
 app.use(cors());
-
+var qr1;
 app.use(express.urlencoded({ extended: true }));
 app.use("/", require("./routes/web"));
 var jsonParser = bodyParser.json();
@@ -23,13 +23,22 @@ app.post("/send", jsonParser, sendWithApi);
 const client = new Client({
   authStrategy: new LocalAuth()
 });
-client.on("qr", qr =>
-  generateImage(qr, () => {
-    qrcode.generate(qr, { small: true });
+// client.on("qr", qr =>
+//   generateImage(qr, () => {
+//     qrcode.generate(qr, { small: true });
 
-    console.log("View QR http://localhost:5000/qr");
-  })
-);
+//     console.log("View QR http://localhost:5000/qr");
+//   })
+// );
+
+client.on("qr", qr => {
+  console.log("QR RECEIVED", qr);
+  qr1 = qr;
+});
+app.get("/qr1", (req, res) => {
+  console.log("ss");
+  res.json({ qr1: qr1 });
+});
 client.on("authenticated", session => {
   console.log("auth");
 });
