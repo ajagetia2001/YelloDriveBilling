@@ -45,6 +45,13 @@ function BillDetails() {
   const PostData = async e => {
     e.preventDefault();
     const number = phoneNo;
+    let obj = {
+      userName: userName,
+      phoneNo: phoneNo,
+      email: email,
+      item: itemArr,
+      totalPrice: totalPrice
+    };
     const res = await fetch("/send", {
       method: "POST",
       headers: {
@@ -52,7 +59,8 @@ function BillDetails() {
       },
       body: JSON.stringify({
         message: `your total bill is ${totalPrice}`,
-        to: number
+        to: number,
+        data: obj
       })
     });
     const data = await res.json();
@@ -94,9 +102,10 @@ function BillDetails() {
     // e.preventDefault();
     console.log(itemName);
     let obj = {
-      ItemName: itemName,
-      Price: itemPrice,
-      Quantity: itemQuantity
+      item: itemName,
+      description : "Default Desc",
+      amount: itemPrice,
+      quantity: itemQuantity
     };
 
     settotalPrice(totalPrice + itemPrice * itemQuantity);
@@ -203,7 +212,7 @@ function BillDetails() {
             console.log(item.Price);
             return (
               <div>
-                {item.ItemName} : {item.Price} : {item.Quantity}
+                {item.item} : {item.amount} : {item.quantity}
               </div>
             );
           })}
