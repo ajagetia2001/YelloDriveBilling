@@ -18,9 +18,9 @@ async function generateHeader(doc) {
     .image("logo.png", 50, 45, { width: 50 })
     .fillColor("#444444")
     .fontSize(20)
-    .text("ACME Inc.", 110, 57)
+    .text("Yello Drive", 110, 57)
     .fontSize(10)
-    .text("ACME Inc.", 200, 50, { align: "right" })
+    .text("Yello Drive", 200, 50, { align: "right" })
     .text("123 Main Street", 200, 65, { align: "right" })
     .text("New York, NY, 10025", 200, 80, { align: "right" })
     .moveDown();

@@ -10,11 +10,11 @@ const { createInvoice } = require("./createInvoice.js");
 
 let invoice = {
   shipping: {
-    name: "John Doe",
+    name: "Aman Kalra",
     address: "1234 Main Street",
-    city: "San Francisco",
-    state: "CA",
-    country: "US",
+    city: "Noida",
+    state: "NCR",
+    country: "India",
     postal_code: 94111
   },
   items: [],
@@ -42,7 +42,7 @@ const sendWithApi = async (req, res) => {
   
   const newNumber = `91${to}@c.us`;
   console.log(message, to, data);
-  // sendMessage(newNumber, message);
+  sendMessage(newNumber, message);
   sendMedia(newNumber,"invoice.pdf");
 
   res.send({ status: "success" });
@@ -87,9 +87,11 @@ function listenMessage() {
   });
 }
 const sendMessage = (to, message) => {
+  console.log("Mei nhi chl rha");
   client.sendMessage(to, message);
 };
 const sendMedia = (to, file) => {
+  console.log("Mei chl rha ");
   const mediafile = MessageMedia.fromFilePath(`${file}`);
   client.sendMessage(to, mediafile);
 };
