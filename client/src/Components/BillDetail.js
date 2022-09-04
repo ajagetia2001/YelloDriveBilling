@@ -3,6 +3,7 @@ import React, { useState, setState } from "react";
 import { database } from "../firebase";
 import { ref, push, child, update } from "firebase/database";
 import { useForm } from "react-hook-form";
+import QRcode from "qrcode.react";
 
 function BillDetails() {
   const [userName, setuserName] = useState("");
@@ -13,6 +14,7 @@ function BillDetails() {
   const [itemPrice, setitemPrice] = useState([]);
   const [itemQuantity, setitemQuantity] = useState([]);
   let [totalPrice, settotalPrice] = useState(0);
+  const [qr, setqr] = useState(null);
   const {
     register,
     handleSubmit,
@@ -40,6 +42,33 @@ function BillDetails() {
     }
     if (id === "email") {
       setEmail(value);
+    }
+  };
+  const createInvoice = async e => {
+    e.preventDefault();
+    const number = phoneNo;
+    let obj = {
+      userName: userName,
+      phoneNo: phoneNo,
+      email: email,
+      item: itemArr,
+      totalPrice: totalPrice
+    };
+    const res = await fetch("/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: `your total bill is ${totalPrice}`,
+        to: number,
+        data: obj
+      })
+    });
+    const data = await res.json();
+    if (data.status === 200) {
+      window.alert("success");
+      console.log(data);
     }
   };
   const PostData = async e => {
@@ -103,7 +132,7 @@ function BillDetails() {
     console.log(itemName);
     let obj = {
       item: itemName,
-      description : "Default Desc",
+      description: "Default Desc",
       amount: itemPrice,
       quantity: itemQuantity
     };
@@ -117,6 +146,13 @@ function BillDetails() {
     // setTimeout(() => {console.log(itemArr);}, 2000);
   };
   console.log(itemArr);
+  const getQr = async e => {
+    e.preventDefault();
+    const res = await fetch("/qr1");
+    const data = await res.json();
+    setqr(data.qr1);
+    console.log(data);
+  };
 
   return (
     <div>
@@ -225,8 +261,22 @@ function BillDetails() {
       </form>
       <form method="POST">
         <div className="footer">
-          <button type="submit" onClick={PostData} className="btn">
-            send WhastappMEssage
+          <div>
+            <button onClick={getQr}>get Qr</button>
+            {qr ? (
+              <QRcode id="myqr" value={qr} size={320} includeMargin={true} />
+            ) : (
+              <button type="submit" onClick={PostData} className="btn">
+                send WhastappMEssage
+              </button>
+            )}
+          </div>
+        </div>
+      </form>
+      <form method="POST">
+        <div className="footer">
+          <button type="submit" onClick={createInvoice} className="btn">
+            CreateInvoice
           </button>
         </div>
       </form>

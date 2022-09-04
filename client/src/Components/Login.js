@@ -46,7 +46,6 @@ const Login = () => {
         <button>Login</button>
       </form>
       <button onClick={getQr}>Wa</button>
-      <div>{qr}</div>
       <div>
         {qr ? (
           <QRcode id="myqr" value={qr} size={320} includeMargin={true} />

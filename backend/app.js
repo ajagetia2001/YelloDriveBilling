@@ -7,7 +7,6 @@ const { Client, MessageMedia, LocalAuth } = require("whatsapp-web.js");
 const { generateImage } = require("./controllers/handle");
 const { createInvoice } = require("./createInvoice.js");
 
-
 let invoice = {
   shipping: {
     name: "John Doe",
@@ -28,28 +27,35 @@ let invoice = {
 const app = express();
 app.use(cors());
 var qr1;
+var check = false;
 app.use(express.urlencoded({ extended: true }));
 app.use("/", require("./routes/web"));
 var jsonParser = bodyParser.json();
-const sendWithApi = async (req, res) => {
-
+const sendWithApi = (req, res) => {
   const { message, to, data } = req.body;
-  invoice.items=data.item;
-  invoice.subtotal=data.totalPrice;
-  console.log(invoice);
-  await createInvoice(invoice, "invoice.pdf");
-  createInvoice(invoice, "invoice.pdf");
-  
+  // invoice.items = data.item;
+  // invoice.subtotal = data.totalPrice;
+  // console.log(invoice);
+  // createInvoice(invoice, "invoice.pdf");
+  // createInvoice(invoice, "invoice.pdf");
+
   const newNumber = `91${to}@c.us`;
   console.log(message, to, data);
   // sendMessage(newNumber, message);
-  sendMedia(newNumber,"invoice.pdf");
+  sendMedia(newNumber, "invoice.pdf");
 
   res.send({ status: "success" });
-
-
+};
+const createInvoiceApi = (req, res) => {
+  const { message, to, data } = req.body;
+  invoice.items = data.item;
+  invoice.subtotal = data.totalPrice;
+  console.log(invoice);
+  createInvoice(invoice, "invoice.pdf");
+  res.send({ status: "success" });
 };
 app.post("/send", jsonParser, sendWithApi);
+app.post("/create", jsonParser, createInvoiceApi);
 const client = new Client({
   authStrategy: new LocalAuth()
 });
@@ -62,12 +68,15 @@ const client = new Client({
 // );
 
 client.on("qr", qr => {
+  console.log("kk");
   console.log("QR RECEIVED", qr);
+
   qr1 = qr;
 });
 app.get("/qr1", (req, res) => {
   console.log("ss");
-  res.json({ qr1: qr1 });
+  console.log(qr1);
+  res.json({ qr1: qr1, check: check });
 });
 client.on("authenticated", session => {
   console.log("auth");
