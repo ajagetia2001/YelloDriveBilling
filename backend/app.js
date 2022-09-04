@@ -71,6 +71,7 @@ const client = new Client({
 
 client.on("qr", qr => {
   console.log("kk");
+  check = false;
   console.log("QR RECEIVED", qr);
 
   qr1 = qr;
@@ -81,10 +82,12 @@ app.get("/qr1", (req, res) => {
   res.json({ qr1: qr1, check: check });
 });
 client.on("authenticated", session => {
+  check = true;
   console.log("auth");
 });
 
 client.on("ready", () => {
+  check = true;
   console.log("Client is ready!");
 });
 // client.on("message", message => {

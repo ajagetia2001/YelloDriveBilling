@@ -1,4 +1,4 @@
-import React, { useState, setState } from "react";
+import React, { useState, setState, useEffect } from "react";
 // import "./style.css";
 import { database } from "../firebase";
 import { ref, push, child, update } from "firebase/database";
@@ -15,6 +15,7 @@ function BillDetails() {
   const [itemQuantity, setitemQuantity] = useState([]);
   let [totalPrice, settotalPrice] = useState(0);
   const [qr, setqr] = useState(null);
+  const [check, setCheck] = useState(true);
   const {
     register,
     handleSubmit,
@@ -44,6 +45,7 @@ function BillDetails() {
       setEmail(value);
     }
   };
+  useEffect(() => {}, [qr]);
   const createInvoice = async e => {
     e.preventDefault();
     const number = phoneNo;
@@ -151,6 +153,7 @@ function BillDetails() {
     const res = await fetch("/qr1");
     const data = await res.json();
     setqr(data.qr1);
+    setCheck(data.check);
     console.log(data);
   };
 
@@ -259,18 +262,23 @@ function BillDetails() {
           </button>
         </div>
       </form>
+      <button onClick={getQr}>whatsapp Login</button>
+      <div>
+        {check ? (
+          <p>Already Logged In</p>
+        ) : (
+          <QRcode id="myqr" value={qr} size={320} includeMargin={true} />
+        )}
+      </div>
       <form method="POST">
         <div className="footer">
-          <div>
-            <button onClick={getQr}>get Qr</button>
-            {qr ? (
-              <QRcode id="myqr" value={qr} size={320} includeMargin={true} />
-            ) : (
-              <button type="submit" onClick={PostData} className="btn">
-                send WhastappMEssage
-              </button>
-            )}
-          </div>
+          {check ? (
+            <button type="submit" onClick={PostData} className="btn">
+              send WhastappMEssage
+            </button>
+          ) : (
+            <p>You have to first scan your qr code</p>
+          )}
         </div>
       </form>
       <form method="POST">
