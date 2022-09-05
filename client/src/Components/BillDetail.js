@@ -4,7 +4,7 @@ import { database } from "../firebase";
 import { ref, push, child, update } from "firebase/database";
 import { useForm } from "react-hook-form";
 import QRcode from "qrcode.react";
-
+import Popup from "./popup";
 function BillDetails() {
   const [userName, setuserName] = useState("");
   const [phoneNo, setphoneNo] = useState("");
@@ -16,6 +16,7 @@ function BillDetails() {
   let [totalPrice, settotalPrice] = useState(0);
   const [qr, setqr] = useState(null);
   const [check, setCheck] = useState(true);
+  const [buttonPopup, setButtonPopup] = useState(false);
   const {
     register,
     handleSubmit,
@@ -100,6 +101,10 @@ function BillDetails() {
       console.log(data);
     }
   };
+  const close = () => {
+    // setButtonPopup(false);
+    getQr1();
+  };
   const onSubmit = () => {
     // PostData();
     let curr = 0;
@@ -149,13 +154,27 @@ function BillDetails() {
   };
   console.log(itemArr);
   const getQr = async e => {
-    e.preventDefault();
+    // e.preventDefault();
+    setButtonPopup(true);
     const res = await fetch("/qr1");
     const data = await res.json();
     setqr(data.qr1);
     setCheck(data.check);
     console.log(data);
   };
+  const getQr1 = async e => {
+    e.preventDefault();
+    // setButtonPopup(true);
+    const res = await fetch("/qr1");
+    const data = await res.json();
+    setqr(data.qr1);
+    setCheck(data.check);
+    console.log(data);
+  };
+  useEffect(() => {
+    getQr1();
+    setCheck(false);
+  }, []);
 
   return (
     <div>
@@ -267,7 +286,13 @@ function BillDetails() {
         {check ? (
           <p>Already Logged In</p>
         ) : (
-          <QRcode id="myqr" value={qr} size={320} includeMargin={true} />
+          <Popup trigger={buttonPopup} setTrigger={setButtonPopup}>
+            <h1>My popup</h1>
+            <button className="close-btn" onClick={close}>
+              close
+            </button>
+            <QRcode id="myqr" value={qr} size={320} includeMargin={true} />
+          </Popup>
         )}
       </div>
       <form method="POST">
